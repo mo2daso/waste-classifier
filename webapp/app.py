@@ -8,8 +8,8 @@ from tensorflow.keras.preprocessing.image import load_img, img_to_array
 app = Flask(__name__)
 
 # Paths & config
-MODEL_PATH = r"C:\Users\Anoshia\Desktop\AI CCP\all_models\mobilenetv2_waste_classifier_model.h5"
-UPLOAD_FOLDER = r"C:\Users\Anoshia\Desktop\AI CCP\webapp\static\uploads"
+MODEL_PATH = r"C:\Users\Anoshia\Desktop\waste-classifier\all_models\mobilenetv2_waste_classifier_model.h5"
+UPLOAD_FOLDER = r"C:\Users\Anoshia\Desktop\waste-classifier\webapp\static\uploads"
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
