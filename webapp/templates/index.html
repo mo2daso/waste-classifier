@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Waste Classifier - MobileNetV2</title>
+    <style>
+      * {
+        box-sizing: border-box;
+        font-family: "Poppins", sans-serif;
+      }
+
+      body {
+        margin: 0;
+        background-color: #0f1c16;
+        color: #d4f4dd;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding: 2rem;
+        min-height: 100vh;
+      }
+
+      h1 {
+        color: #9aff8a;
+        font-weight: 600;
+        font-size: 2rem;
+        margin-bottom: 1.5rem;
+        text-shadow: 0 0 10px rgba(102, 255, 153, 0.3);
+      }
+
+      form {
+        background-color: #182d23;
+        padding: 2rem;
+        border-radius: 16px;
+        box-shadow: 0 0 20px rgba(51, 204, 102, 0.15);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        max-width: 400px;
+      }
+
+      .upload-box {
+        border: 2px dashed #3ed386;
+        border-radius: 12px;
+        padding: 1.5rem;
+        width: 100%;
+        text-align: center;
+        margin-bottom: 1rem;
+        transition: border-color 0.3s ease;
+        cursor: pointer;
+        position: relative;
+      }
+
+      .upload-box.dragover {
+        border-color: #9aff8a;
+      }
+
+      .upload-box input[type="file"] {
+        display: none;
+      }
+
+      #preview {
+        width: 100%;
+        border-radius: 10px;
+        margin-top: 1rem;
+        display: none;
+        border: 1px solid #3ed386;
+      }
+
+      button {
+        background-color: #3ed386;
+        color: #0f1c16;
+        font-weight: 600;
+        border: none;
+        border-radius: 8px;
+        padding: 0.8rem 1.5rem;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        width: 100%;
+        margin-top: 1rem;
+      }
+
+      button:hover {
+        background-color: #28bd72;
+        box-shadow: 0 0 15px rgba(46, 240, 139, 0.3);
+      }
+
+      .modal {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.75);
+        z-index: 999;
+      }
+
+      .modal-content {
+        background: #182d23;
+        color: #d4f4dd;
+        padding: 2rem;
+        border-radius: 14px;
+        text-align: center;
+        width: 90%;
+        max-width: 400px;
+        box-shadow: 0 0 20px rgba(102, 255, 153, 0.2);
+      }
+
+      .modal-content img {
+        max-width: 100%;
+        border-radius: 10px;
+        border: 1px solid #3ed386;
+        margin-bottom: 1rem;
+      }
+
+      .close-btn {
+        margin-top: 1rem;
+        background-color: #9aff8a;
+        color: #0f1c16;
+        border: none;
+        padding: 0.6rem 1.2rem;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+      }
+
+      .close-btn:hover {
+        background-color: #76e468;
+      }
+
+      footer {
+        margin-top: 2rem;
+        font-size: 0.85rem;
+        color: #5ee198;
+        font-style: italic;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>AI Waste Classifier</h1>
+
+    <form method="POST" enctype="multipart/form-data">
+      <label class="upload-box" id="uploadLabel">
+        Drag & drop an image or click to upload
+        <input type="file" name="image" id="image" accept="image/*" required />
+        <img id="preview" src="#" alt="Image Preview" />
+      </label>
+      <button type="submit">Predict</button>
+    </form>
+
+    {% if prediction %}
+    <div class="modal" id="resultModal">
+      <div class="modal-content">
+        <img src="{{ image_url }}" alt="Uploaded Image" />
+        <h2>Prediction Result</h2>
+        <p><strong>Predicted Class:</strong> {{ prediction }}</p>
+        <button class="close-btn" onclick="closeModal()">Close</button>
+      </div>
+    </div>
+    {% endif %}
+
+    <footer>Trained using MobileNetV2</footer>
+
+    <script>
+      const imageInput = document.getElementById("image");
+      const preview = document.getElementById("preview");
+      const label = document.getElementById("uploadLabel");
+
+      label.addEventListener("dragover", (e) => {
+        e.preventDefault();
+        label.classList.add("dragover");
+      });
+
+      label.addEventListener("dragleave", () => {
+        label.classList.remove("dragover");
+      });
+
+      label.addEventListener("drop", (e) => {
+        e.preventDefault();
+        imageInput.files = e.dataTransfer.files;
+        label.classList.remove("dragover");
+        showPreview(e.dataTransfer.files[0]);
+      });
+
+      imageInput.addEventListener("change", (e) => {
+        showPreview(e.target.files[0]);
+      });
+
+      function showPreview(file) {
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = function (e) {
+            preview.src = e.target.result;
+            preview.style.display = "block";
+          };
+          reader.readAsDataURL(file);
+        }
+      }
+
+      function closeModal() {
+        document.getElementById("resultModal").style.display = "none";
+      }
+    </script>
+  </body>
+</html>
