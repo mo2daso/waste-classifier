@@ -15,3 +15,5 @@ Thumbs.db
 *.h5
 *.ckpt
 logs/
+webapp/
+__waste-classifier__
