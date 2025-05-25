@@ -1,3 +1,4 @@
+import os
 from flask import Flask, render_template, request, redirect, url_for
 from werkzeug.utils import secure_filename
 import os
@@ -8,8 +9,11 @@ from tensorflow.keras.preprocessing.image import load_img, img_to_array
 app = Flask(__name__)
 
 # Paths & config
-MODEL_PATH = r"C:\Users\Anoshia\Desktop\waste-classifier\all_models\mobilenetv2_waste_classifier_model.h5"
-UPLOAD_FOLDER = r"C:\Users\Anoshia\Desktop\waste-classifier\webapp\static\uploads"
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# Paths should be relative to BASE_DIR
+MODEL_PATH = os.path.join(BASE_DIR, "all_models", "mobilenetv2_waste_classifier_model.h5")
+UPLOAD_FOLDER = os.path.join(BASE_DIR, "webapp", "static", "uploads")
 ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
