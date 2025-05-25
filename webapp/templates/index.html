@@ -4,88 +4,139 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Waste Classifier - MobileNetV2</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&family=Open+Sans:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
     <style>
+      :root {
+        --bg-dark: #1a1a2e;
+        --card-bg: #1f2a3a;
+        --text-light: #e0e0e0;
+        --primary-accent: #00bcd4; /* Vibrant Cyan */
+        --secondary-accent: #4dd0e1; /* Lighter Cyan */
+        --hover-effect: #008ba3;
+        --shadow-color: rgba(0, 188, 212, 0.3);
+        --border-color: rgba(0, 188, 212, 0.4);
+      }
+
       * {
         box-sizing: border-box;
-        font-family: "Poppins", sans-serif;
       }
 
       body {
         margin: 0;
-        background-color: #0f1c16;
-        color: #d4f4dd;
+        background: linear-gradient(135deg, #0e151d, var(--bg-dark), #1a1a2e);
+        color: var(--text-light);
         display: flex;
         flex-direction: column;
         align-items: center;
-        padding: 2rem;
+        padding: 3.5rem 1.5rem;
         min-height: 100vh;
+        justify-content: center;
+        font-family: "Open Sans", sans-serif; /* Body font */
       }
 
       h1 {
-        color: #9aff8a;
-        font-weight: 600;
-        font-size: 2rem;
-        margin-bottom: 1.5rem;
-        text-shadow: 0 0 10px rgba(102, 255, 153, 0.3);
+        font-family: "Montserrat", sans-serif; /* Heading font */
+        color: var(--secondary-accent);
+        font-weight: 700;
+        font-size: 3rem;
+        margin-bottom: 2.5rem;
+        text-shadow: 0 0 20px var(--shadow-color);
+        letter-spacing: 1.5px;
       }
 
       form {
-        background-color: #182d23;
-        padding: 2rem;
-        border-radius: 16px;
-        box-shadow: 0 0 20px rgba(51, 204, 102, 0.15);
+        background-color: var(--card-bg);
+        padding: 3rem;
+        border-radius: 20px;
+        box-shadow: 0 10px 40px var(--shadow-color);
         display: flex;
         flex-direction: column;
         align-items: center;
         width: 100%;
-        max-width: 400px;
+        max-width: 480px;
+        border: 1px solid var(--border-color);
       }
 
       .upload-box {
-        border: 2px dashed #3ed386;
-        border-radius: 12px;
-        padding: 1.5rem;
+        border: 3px dashed var(--primary-accent);
+        border-radius: 16px;
+        padding: 2rem;
         width: 100%;
         text-align: center;
-        margin-bottom: 1rem;
-        transition: border-color 0.3s ease;
+        margin-bottom: 1.5rem;
+        transition: border-color 0.4s ease, background-color 0.4s ease;
         cursor: pointer;
         position: relative;
+        font-size: 1.15rem;
+        color: var(--text-light);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        min-height: 160px;
+        gap: 1rem; /* Space between text and preview */
       }
 
+      .upload-box:hover,
       .upload-box.dragover {
-        border-color: #9aff8a;
+        border-color: var(--secondary-accent);
+        background-color: rgba(0, 188, 212, 0.08);
       }
 
       .upload-box input[type="file"] {
         display: none;
       }
 
+      #preview-container {
+        display: none; /* Controlled by JS */
+        margin-top: 1rem;
+        width: 120px; /* Small preview size */
+        height: 120px; /* Small preview size */
+        border-radius: 50%; /* Circular preview */
+        overflow: hidden;
+        border: 3px solid var(--primary-accent);
+        box-shadow: 0 0 15px var(--shadow-color);
+        flex-shrink: 0; /* Prevent it from shrinking */
+      }
+
       #preview {
         width: 100%;
-        border-radius: 10px;
-        margin-top: 1rem;
-        display: none;
-        border: 1px solid #3ed386;
+        height: 100%;
+        object-fit: cover; /* Crop image to fit circular container */
+        display: block; /* Ensure image fills container */
       }
 
       button {
-        background-color: #3ed386;
-        color: #0f1c16;
-        font-weight: 600;
+        font-family: "Montserrat", sans-serif; /* Button font */
+        background: linear-gradient(
+          90deg,
+          var(--primary-accent),
+          var(--secondary-accent)
+        );
+        color: var(--bg-dark);
+        font-weight: 700;
         border: none;
-        border-radius: 8px;
-        padding: 0.8rem 1.5rem;
-        font-size: 1rem;
+        border-radius: 10px;
+        padding: 1.1rem 2.2rem;
+        font-size: 1.2rem;
         cursor: pointer;
-        transition: background-color 0.3s ease, box-shadow 0.3s ease;
+        transition: transform 0.2s ease, box-shadow 0.3s ease,
+          background 0.3s ease;
         width: 100%;
-        margin-top: 1rem;
+        margin-top: 1.5rem;
+        letter-spacing: 0.8px;
+        text-transform: uppercase;
       }
 
       button:hover {
-        background-color: #28bd72;
-        box-shadow: 0 0 15px rgba(46, 240, 139, 0.3);
+        background: linear-gradient(90deg, var(--hover-effect), #00add0);
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(0, 188, 212, 0.5);
       }
 
       .modal {
@@ -97,48 +148,102 @@
         left: 0;
         right: 0;
         bottom: 0;
-        background-color: rgba(0, 0, 0, 0.75);
+        background-color: rgba(0, 0, 0, 0.9);
         z-index: 999;
+        backdrop-filter: blur(8px);
+        -webkit-backdrop-filter: blur(8px);
+        animation: fadeIn 0.3s ease-out forwards;
       }
 
       .modal-content {
-        background: #182d23;
-        color: #d4f4dd;
-        padding: 2rem;
-        border-radius: 14px;
+        background: linear-gradient(145deg, #2a3e50, var(--card-bg));
+        color: var(--text-light);
+        padding: 3rem;
+        border-radius: 20px;
         text-align: center;
         width: 90%;
-        max-width: 400px;
-        box-shadow: 0 0 20px rgba(102, 255, 153, 0.2);
+        max-width: 500px;
+        box-shadow: 0 15px 50px var(--shadow-color);
+        border: 1px solid var(--secondary-accent);
+        animation: scaleIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
       }
 
       .modal-content img {
         max-width: 100%;
-        border-radius: 10px;
-        border: 1px solid #3ed386;
-        margin-bottom: 1rem;
+        max-height: 280px;
+        object-fit: contain;
+        border-radius: 15px;
+        border: 2px solid var(--primary-accent);
+        margin-bottom: 2rem;
+        box-shadow: 0 0 20px var(--shadow-color);
+      }
+
+      .modal-content h2 {
+        font-family: "Montserrat", sans-serif;
+        color: var(--secondary-accent);
+        font-size: 2.5rem;
+        margin-bottom: 1.2rem;
+        text-shadow: 0 0 10px rgba(77, 208, 225, 0.3);
+      }
+
+      .modal-content p {
+        font-size: 1.3rem;
+        line-height: 1.7;
+        margin-bottom: 2rem;
+      }
+
+      .modal-content strong {
+        color: var(--primary-accent);
+        font-weight: 700;
+        text-transform: capitalize;
       }
 
       .close-btn {
-        margin-top: 1rem;
-        background-color: #9aff8a;
-        color: #0f1c16;
+        margin-top: 1.5rem;
+        background-color: var(--secondary-accent);
+        color: var(--bg-dark);
         border: none;
-        padding: 0.6rem 1.2rem;
-        border-radius: 6px;
+        padding: 0.9rem 2rem;
+        border-radius: 8px;
         cursor: pointer;
-        font-weight: bold;
+        font-weight: 600;
+        font-size: 1.1rem;
+        transition: background-color 0.3s ease, transform 0.2s ease;
       }
 
       .close-btn:hover {
-        background-color: #76e468;
+        background-color: #00add0;
+        transform: translateY(-2px);
       }
 
       footer {
-        margin-top: 2rem;
-        font-size: 0.85rem;
-        color: #5ee198;
+        margin-top: 4rem;
+        font-size: 0.95rem;
+        color: var(--secondary-accent);
         font-style: italic;
+        opacity: 0.7;
+        letter-spacing: 0.5px;
+      }
+
+      /* Animations */
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      @keyframes scaleIn {
+        from {
+          transform: scale(0.8);
+          opacity: 0;
+        }
+        to {
+          transform: scale(1);
+          opacity: 1;
+        }
       }
     </style>
   </head>
@@ -149,7 +254,9 @@
       <label class="upload-box" id="uploadLabel">
         Drag & drop an image or click to upload
         <input type="file" name="image" id="image" accept="image/*" required />
-        <img id="preview" src="#" alt="Image Preview" />
+        <div id="preview-container">
+          <img id="preview" src="#" alt="Image Preview" />
+        </div>
       </label>
       <button type="submit">Predict</button>
     </form>
@@ -169,8 +276,10 @@
 
     <script>
       const imageInput = document.getElementById("image");
+      const previewContainer = document.getElementById("preview-container");
       const preview = document.getElementById("preview");
       const label = document.getElementById("uploadLabel");
+      const resultModal = document.getElementById("resultModal");
 
       label.addEventListener("dragover", (e) => {
         e.preventDefault();
@@ -197,15 +306,26 @@
           const reader = new FileReader();
           reader.onload = function (e) {
             preview.src = e.target.result;
-            preview.style.display = "block";
+            previewContainer.style.display = "block"; // Show the container
           };
           reader.readAsDataURL(file);
+        } else {
+          previewContainer.style.display = "none"; // Hide the container
+          preview.src = "#";
         }
       }
 
       function closeModal() {
-        document.getElementById("resultModal").style.display = "none";
+        if (resultModal) {
+          resultModal.style.display = "none";
+        }
       }
+
+      window.onload = function () {
+        if (resultModal && resultModal.style.display !== "none") {
+          resultModal.style.display = "flex";
+        }
+      };
     </script>
   </body>
 </html>
